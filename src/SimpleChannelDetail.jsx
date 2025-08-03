@@ -1,4 +1,4 @@
-// src/SimpleChannelDetail.jsx - Enhanced với biểu đồ tách riêng theo sensor
+// src/SimpleChannelDetail.jsx - Final version với MultiSensorChartView chuyên biệt
 import React, { useState, useEffect } from 'react';
 import { Activity, RefreshCw, AlertTriangle, ArrowLeft, Calendar, Filter, Download, Settings, BarChart3, TrendingUp } from 'lucide-react';
 import { SENSOR_CONFIG } from './sensorConfig';
@@ -1326,21 +1326,6 @@ const SensorLinearHeatmap = ({ title, data, unit, min, max, thresholdType, displ
     return getSensorSpecificColor(value, fieldKey);
   };
 
-  const getContrastColor = (backgroundColor) => {
-    // Improved contrast calculation
-    const hex = backgroundColor.replace('#', '');
-    const r = parseInt(hex.substr(0, 2), 16);
-    const g = parseInt(hex.substr(2, 2), 16);
-    const b = parseInt(hex.substr(4, 2), 16);
-    
-    // Use relative luminance formula for better accuracy
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    
-    // Lower threshold for better contrast
-    return luminance > 0.6 ? '#000000' : '#ffffff';
-  };
-
-  // Alternative: Force specific colors for better readability
   const getOptimalTextColor = (backgroundColor) => {
     const darkColors = ['#1e3a8a', '#1e40af', '#7f1d1d', '#ef4444', '#f97316'];
     const lightColors = ['#22c55e', '#84cc16', '#eab308', '#60a5fa'];
@@ -1409,15 +1394,15 @@ const SensorLinearHeatmap = ({ title, data, unit, min, max, thresholdType, displ
                 borderRadius: '6px',
                 textAlign: 'center',
                 fontSize: displayCount > 15 ? '0.65rem' : '0.75rem',
-                fontWeight: '700', // Increased font weight for better visibility
+                fontWeight: '700',
                 minHeight: displayCount > 15 ? '45px' : '55px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
                 transition: 'all 0.3s ease',
                 cursor: 'pointer',
-                textShadow: textColor === '#ffffff' ? '1px 1px 2px rgba(0,0,0,0.8)' : '1px 1px 2px rgba(255,255,255,0.8)', // Add text shadow for better contrast
-                border: '1px solid rgba(255,255,255,0.2)' // Subtle border for definition
+                textShadow: textColor === '#ffffff' ? '1px 1px 2px rgba(0,0,0,0.8)' : '1px 1px 2px rgba(255,255,255,0.8)',
+                border: '1px solid rgba(255,255,255,0.2)'
               }}
               onMouseEnter={(e) => {
                 e.target.style.transform = 'scale(1.1)';
@@ -1434,7 +1419,7 @@ const SensorLinearHeatmap = ({ title, data, unit, min, max, thresholdType, displ
               title={`${value.toFixed(1)}${unit} - Record ${displayData.length - index}`}
             >
               <div style={{
-                fontWeight: '800', // Extra bold for main value
+                fontWeight: '800',
                 textShadow: 'inherit'
               }}>
                 {value.toFixed(1)}{unit}
@@ -1442,7 +1427,7 @@ const SensorLinearHeatmap = ({ title, data, unit, min, max, thresholdType, displ
               {displayCount <= 15 && (
                 <div style={{ 
                   fontSize: '0.55rem', 
-                  opacity: 0.9, // Increased opacity
+                  opacity: 0.9,
                   marginTop: '2px',
                   fontWeight: '600',
                   textShadow: 'inherit'
@@ -1469,7 +1454,7 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
   const [lastUpdate, setLastUpdate] = useState(null);
   const [countdown, setCountdown] = useState(30);
   const [showFilters, setShowFilters] = useState(false);
-  const [viewMode, setViewMode] = useState('heatmap'); // 'heatmap' hoặc 'chart'
+  const [viewMode, setViewMode] = useState('heatmap'); // 'heatmap' hoặc 'charts'
   
   // Filter states
   const [filters, setFilters] = useState({
@@ -1863,8 +1848,8 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
             </button>
             
             <button
-              onClick={() => setViewMode('chart')}
-              className={`control-btn ${viewMode === 'chart' ? 'active' : ''}`}
+              onClick={() => setViewMode('charts')}
+              className={`control-btn ${viewMode === 'charts' ? 'active' : ''}`}
             >
               <TrendingUp size={16} />
               Biểu đồ chuyên biệt
@@ -1920,7 +1905,7 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
         }}>
           📊 Kênh <strong>{channelInfo.channel}</strong> • 
           {getTimeRangeLabel()} • 
-          {viewMode === 'heatmap' ? `Hiển thị ${filters.displayCount} records` : `Biểu đồ chuyên biệt ${chartData.length} records`} • 
+          {viewMode === 'heatmap' ? `Heatmap ${filters.displayCount} records` : `Biểu đồ chuyên biệt ${chartData.length} records`} • 
           Tổng <strong>{data.feeds.length} records</strong> có sẵn • 
           Cập nhật: <strong>{lastUpdate?.toLocaleString('vi-VN')}</strong>
         </div>
@@ -1950,7 +1935,7 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
           </div>
         )}
 
-        {viewMode === 'chart' && (
+        {viewMode === 'charts' && (
           <div>
             <MultiSensorChartView 
               data={chartData || []}
@@ -1963,7 +1948,7 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
 
         {/* No Data Warning */}
         {((viewMode === 'heatmap' && Object.keys(filteredData).length === 0) || 
-          (viewMode === 'chart' && chartData.length === 0)) && (
+          (viewMode === 'charts' && chartData.length === 0)) && (
           <div style={{
             padding: '40px',
             textAlign: 'center',
