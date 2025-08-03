@@ -1,12 +1,11 @@
-// src/ThingSpeakDashboard.jsx - Dashboard tổng hợp với ChannelSelector
+// src/ThingSpeakDashboard.jsx - Dashboard tổng hợp KHÔNG có biểu đồ
 import React, { useEffect, useState, useMemo } from 'react';
-import { Activity, RefreshCw, AlertTriangle, Calendar, TrendingUp, BarChart3 } from 'lucide-react';
+import { Activity, RefreshCw, AlertTriangle, Calendar, TrendingUp } from 'lucide-react';
 
 // Import components  
 import StatCard from './StatCard';
 import SensorHeatmap from './SensorHeatmap';
 import AlertPanel from './AlertPanel';
-import ChartView from './ChartView';
 import HistoricalComparison from './HistoricalComparison';
 import TrendAnalysis from './TrendAnalysis';
 import ChannelSelector from './ChannelSelector';
@@ -20,7 +19,7 @@ const ThingSpeakDashboard = ({ onSelectChannel }) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [viewMode, setViewMode] = useState('heatmap');
+  const [viewMode, setViewMode] = useState('heatmap'); // Chỉ còn: heatmap, historical, trend
   const [selectedSensor, setSelectedSensor] = useState('field1');
   const [lastUpdate, setLastUpdate] = useState(null);
 
@@ -224,16 +223,6 @@ const ThingSpeakDashboard = ({ onSelectChannel }) => {
     })
   );
 
-  const chartData = data.feeds.map((feed, index) => ({
-    time: timeLabels[index],
-    temp: parseFloat(feed.field1) || 0,
-    humidity: parseFloat(feed.field2) || 0,
-    mq7Raw: parseFloat(feed.field3) || 0,
-    mq7CO: parseFloat(feed.field4) || 0,
-    mq2Raw: parseFloat(feed.field5) || 0,
-    dust: parseFloat(feed.field8) || 0
-  }));
-
   const latest = data.feeds[0];
   const previous = data.feeds.length > 1 ? data.feeds[1] : null;
 
@@ -286,12 +275,7 @@ const ThingSpeakDashboard = ({ onSelectChannel }) => {
             >
               🗺️ Bản đồ nhiệt
             </button>
-            <button
-              onClick={() => setViewMode('chart')}
-              className={`control-btn ${viewMode === 'chart' ? 'active' : ''}`}
-            >
-              📈 Biểu đồ
-            </button>
+            
             <button
               onClick={() => setViewMode('historical')}
               className={`control-btn ${viewMode === 'historical' ? 'active' : ''}`}
@@ -376,14 +360,20 @@ const ThingSpeakDashboard = ({ onSelectChannel }) => {
               unit={SENSOR_CONFIG[selectedSensor].unit}
               thresholdType={SENSOR_CONFIG[selectedSensor].threshold}
             />
+            
+            {/* Thông báo hướng dẫn */}
+            <div style={{
+              marginTop: '20px',
+              padding: '16px',
+              backgroundColor: '#eff6ff',
+              borderRadius: '12px',
+              border: '1px solid #bae6fd',
+              fontSize: '0.9rem',
+              color: '#0c4a6e'
+            }}>
+              💡 <strong>Xem biểu đồ xu hướng:</strong> Click vào dropdown "Kênh" ở góc phải và chọn kênh cụ thể để xem biểu đồ chi tiết theo thời gian của kênh đó.
+            </div>
           </div>
-        )}
-
-        {viewMode === 'chart' && (
-          <ChartView 
-            data={chartData}
-            title={`Biểu đồ xu hướng theo thời gian (${data.feeds.length} records)`}
-          />
         )}
 
         {viewMode === 'historical' && (

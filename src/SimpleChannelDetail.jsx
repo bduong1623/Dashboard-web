@@ -1,9 +1,10 @@
-// src/SimpleChannelDetail.jsx - Enhanced với bộ lọc tương tác và Date Picker cải tiến
+// src/SimpleChannelDetail.jsx - Enhanced với biểu đồ và bộ lọc tương tác
 import React, { useState, useEffect } from 'react';
-import { Activity, RefreshCw, AlertTriangle, ArrowLeft, Calendar, Filter, Download, Settings } from 'lucide-react';
+import { Activity, RefreshCw, AlertTriangle, ArrowLeft, Calendar, Filter, Download, Settings, BarChart3, TrendingUp } from 'lucide-react';
 import { SENSOR_CONFIG } from './sensorConfig';
 import { getValueColorAndStatus } from './thresholds';
 import AlertPanel from './AlertPanel';
+import ChartView from './ChartView';
 
 // ===== SENSOR LEGENDS CONFIGURATION =====
 const SENSOR_LEGENDS = {
@@ -258,6 +259,7 @@ const SensorSpecificLegend = ({ fieldKey }) => {
     </div>
   );
 };
+
 const parseDateString = (dateStr, onFilterChange, filterKey, otherDate = null) => {
   // Remove any non-digit and non-slash characters
   const cleanStr = dateStr.replace(/[^\d\/]/g, '');
@@ -1467,6 +1469,7 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
   const [lastUpdate, setLastUpdate] = useState(null);
   const [countdown, setCountdown] = useState(30);
   const [showFilters, setShowFilters] = useState(false);
+  const [viewMode, setViewMode] = useState('heatmap'); // 'heatmap' hoặc 'chart'
   
   // Filter states
   const [filters, setFilters] = useState({
@@ -1673,6 +1676,62 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
     return processedData;
   }, [data, filters]);
 
+  // Create chart data for selected sensors
+  const chartData = React.useMemo(() => {
+    if (!data || !data.feeds) return [];
+
+    return data.feeds.slice(-filters.displayCount * 2).map((feed, index) => {
+      const timeLabel = new Date(feed.created_at).toLocaleTimeString('vi-VN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        day: '2-digit',
+        month: '2-digit'
+      });
+
+      const dataPoint = { 
+        time: timeLabel, 
+        timestamp: feed.created_at,
+        index: index
+      };
+
+      // Add selected sensor data
+      Object.keys(filters.selectedSensors).forEach(fieldKey => {
+        if (filters.selectedSensors[fieldKey]) {
+          const config = SENSOR_CONFIG[fieldKey];
+          // Map field names to chart-friendly names
+          switch (fieldKey) {
+            case 'field1':
+              dataPoint.temp = parseFloat(feed[fieldKey]) || 0;
+              break;
+            case 'field2':
+              dataPoint.humidity = parseFloat(feed[fieldKey]) || 0;
+              break;
+            case 'field3':
+              dataPoint.mq7Raw = parseFloat(feed[fieldKey]) || 0;
+              break;
+            case 'field4':
+              dataPoint.mq7CO = parseFloat(feed[fieldKey]) || 0;
+              break;
+            case 'field5':
+              dataPoint.mq2Raw = parseFloat(feed[fieldKey]) || 0;
+              break;
+            case 'field6':
+              dataPoint.lpg = parseFloat(feed[fieldKey]) || 0;
+              break;
+            case 'field7':
+              dataPoint.smoke = parseFloat(feed[fieldKey]) || 0;
+              break;
+            case 'field8':
+              dataPoint.dust = parseFloat(feed[fieldKey]) || 0;
+              break;
+          }
+        }
+      });
+
+      return dataPoint;
+    });
+  }, [data, filters]);
+
   // Export data function
   const exportData = () => {
     if (!data || !data.feeds) return;
@@ -1780,11 +1839,28 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
               Quay lại
             </button>
             <h1 className="dashboard-title">
-              🔧 Dữ liệu của từng Channel
+              🔧 Kênh {channelInfo.channel} - Chi tiết
             </h1>
           </div>
           
           <div className="dashboard-controls">
+            {/* View Mode Toggle */}
+            <button
+              onClick={() => setViewMode('heatmap')}
+              className={`control-btn ${viewMode === 'heatmap' ? 'active' : ''}`}
+            >
+              <BarChart3 size={16} />
+              Heatmap
+            </button>
+            
+            <button
+              onClick={() => setViewMode('chart')}
+              className={`control-btn ${viewMode === 'chart' ? 'active' : ''}`}
+            >
+              <TrendingUp size={16} />
+              Biểu đồ
+            </button>
+
             <FilterPanel
               filters={filters}
               onFilterChange={handleFilterChange}
@@ -1835,33 +1911,49 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
         }}>
           📊 Kênh <strong>{channelInfo.channel}</strong> • 
           {getTimeRangeLabel()} • 
-          Hiển thị <strong>{filters.displayCount} records</strong> cho mỗi sensor • 
+          {viewMode === 'heatmap' ? `Hiển thị ${filters.displayCount} records` : `Biểu đồ ${chartData.length} records`} • 
           Tổng <strong>{data.feeds.length} records</strong> có sẵn • 
           Cập nhật: <strong>{lastUpdate?.toLocaleString('vi-VN')}</strong>
         </div>
 
-        {/* Linear Heatmaps for selected sensors */}
-        {Object.keys(filteredData).map(fieldKey => {
-          const config = SENSOR_CONFIG[fieldKey];
-          const sensorData = filteredData[fieldKey];
-          
-          return (
-            <SensorLinearHeatmap
-              key={fieldKey}
-              title={config.name}
-              data={sensorData.values}
-              unit={config.unit}
-              min={sensorData.min}
-              max={sensorData.max}
-              thresholdType={config.threshold}
-              displayCount={filters.displayCount}
-              fieldKey={fieldKey}
-            />
-          );
-        })}
+        {/* Main Content */}
+        {viewMode === 'heatmap' && (
+          <div>
+            {/* Linear Heatmaps for selected sensors */}
+            {Object.keys(filteredData).map(fieldKey => {
+              const config = SENSOR_CONFIG[fieldKey];
+              const sensorData = filteredData[fieldKey];
+              
+              return (
+                <SensorLinearHeatmap
+                  key={fieldKey}
+                  title={config.name}
+                  data={sensorData.values}
+                  unit={config.unit}
+                  min={sensorData.min}
+                  max={sensorData.max}
+                  thresholdType={config.threshold}
+                  displayCount={filters.displayCount}
+                  fieldKey={fieldKey}
+                />
+              );
+            })}
+          </div>
+        )}
+
+        {viewMode === 'chart' && (
+          <ChartView 
+            data={chartData}
+            title={`📈 Biểu đồ xu hướng kênh ${channelInfo.channel} theo thời gian`}
+            showControls={true}
+            defaultChartType="line"
+            height={500}
+          />
+        )}
 
         {/* No Data Warning */}
-        {Object.keys(filteredData).length === 0 && (
+        {((viewMode === 'heatmap' && Object.keys(filteredData).length === 0) || 
+          (viewMode === 'chart' && chartData.length === 0)) && (
           <div style={{
             padding: '40px',
             textAlign: 'center',
