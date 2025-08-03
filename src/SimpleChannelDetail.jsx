@@ -1,10 +1,10 @@
-// src/SimpleChannelDetail.jsx - Enhanced với biểu đồ và bộ lọc tương tác
+// src/SimpleChannelDetail.jsx - Enhanced với biểu đồ tách riêng theo sensor
 import React, { useState, useEffect } from 'react';
 import { Activity, RefreshCw, AlertTriangle, ArrowLeft, Calendar, Filter, Download, Settings, BarChart3, TrendingUp } from 'lucide-react';
 import { SENSOR_CONFIG } from './sensorConfig';
 import { getValueColorAndStatus } from './thresholds';
 import AlertPanel from './AlertPanel';
-import ChartView from './ChartView';
+import MultiSensorChartView from './MultiSensorChartView';
 
 // ===== SENSOR LEGENDS CONFIGURATION =====
 const SENSOR_LEGENDS = {
@@ -1694,10 +1694,9 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
         index: index
       };
 
-      // Add selected sensor data
+      // Add selected sensor data with proper mapping
       Object.keys(filters.selectedSensors).forEach(fieldKey => {
         if (filters.selectedSensors[fieldKey]) {
-          const config = SENSOR_CONFIG[fieldKey];
           // Map field names to chart-friendly names
           switch (fieldKey) {
             case 'field1':
@@ -1731,6 +1730,16 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
       return dataPoint;
     });
   }, [data, filters]);
+
+  // Convert selectedSensors from field keys to chart keys for MultiSensorChartView
+  const chartSelectedSensors = React.useMemo(() => {
+    return {
+      temp: filters.selectedSensors.field1 || false,
+      humidity: filters.selectedSensors.field2 || false,
+      mq7CO: filters.selectedSensors.field4 || false,
+      dust: filters.selectedSensors.field8 || false
+    };
+  }, [filters.selectedSensors]);
 
   // Export data function
   const exportData = () => {
@@ -1858,7 +1867,7 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
               className={`control-btn ${viewMode === 'chart' ? 'active' : ''}`}
             >
               <TrendingUp size={16} />
-              Biểu đồ
+              Biểu đồ chuyên biệt
             </button>
 
             <FilterPanel
@@ -1911,7 +1920,7 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
         }}>
           📊 Kênh <strong>{channelInfo.channel}</strong> • 
           {getTimeRangeLabel()} • 
-          {viewMode === 'heatmap' ? `Hiển thị ${filters.displayCount} records` : `Biểu đồ ${chartData.length} records`} • 
+          {viewMode === 'heatmap' ? `Hiển thị ${filters.displayCount} records` : `Biểu đồ chuyên biệt ${chartData.length} records`} • 
           Tổng <strong>{data.feeds.length} records</strong> có sẵn • 
           Cập nhật: <strong>{lastUpdate?.toLocaleString('vi-VN')}</strong>
         </div>
@@ -1942,13 +1951,14 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
         )}
 
         {viewMode === 'chart' && (
-          <ChartView 
-            data={chartData}
-            title={`📈 Biểu đồ xu hướng kênh ${channelInfo.channel} theo thời gian`}
-            showControls={true}
-            defaultChartType="line"
-            height={500}
-          />
+          <div>
+            <MultiSensorChartView 
+              data={chartData || []}
+              title={`📊 Biểu đồ chuyên biệt kênh ${channelInfo?.channel || 'Unknown'}`}
+              selectedSensors={chartSelectedSensors}
+              height={400}
+            />
+          </div>
         )}
 
         {/* No Data Warning */}
