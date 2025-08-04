@@ -1,7 +1,8 @@
 // src/MultiChannelDashboard.jsx - Dashboard chính với navigation đa kênh  
 import React, { useState } from 'react';
-import ThingSpeakDashboard from './ThingSpeakDashboard'; // Dashboard tổng hợp ban đầu
-import SimpleChannelDetail from './SimpleChannelDetail'; // Chi tiết kênh đơn giản
+import ThingSpeakDashboard from './ThingSpeakDashboard';
+import SimpleChannelDetail from './SimpleChannelDetail';
+
 
 const MultiChannelDashboard = () => {
   const [currentView, setCurrentView] = useState('main'); // 'main' hoặc 'detail'

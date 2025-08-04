@@ -1,7 +1,7 @@
 // src/hooks/useDataFilter.js - Hook xử lý logic filter dữ liệu
 import { useMemo } from 'react';
-import { SENSOR_CONFIG } from '../sensorConfig';
-import { getValueColorAndStatus } from '../thresholds';
+import { SENSOR_CONFIG } from '../utils/sensorConfig';
+import { getValueColorAndStatus } from '../utils/thresholds';
 
 export const useDataFilter = (rawData, filters) => {
   const filteredData = useMemo(() => {

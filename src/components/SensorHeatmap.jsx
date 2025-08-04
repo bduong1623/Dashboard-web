@@ -2,7 +2,7 @@
 import React from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import HeatmapCell from './HeatmapCell';
-import { SENSOR_THRESHOLDS } from './thresholds';
+import { SENSOR_THRESHOLDS } from '../utils/thresholds';
 
 const ColorLegend = ({ thresholdType, unit }) => {
   const thresholds = SENSOR_THRESHOLDS[thresholdType] || SENSOR_THRESHOLDS.generic;

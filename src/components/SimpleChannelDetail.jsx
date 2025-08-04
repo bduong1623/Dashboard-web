@@ -1,8 +1,8 @@
 // src/SimpleChannelDetail.jsx - Final version với MultiSensorChartView chuyên biệt
 import React, { useState, useEffect } from 'react';
 import { Activity, RefreshCw, AlertTriangle, ArrowLeft, Calendar, Filter, Download, Settings, BarChart3, TrendingUp } from 'lucide-react';
-import { SENSOR_CONFIG } from './sensorConfig';
-import { getValueColorAndStatus } from './thresholds';
+import { SENSOR_CONFIG } from '../utils/sensorConfig';
+import { getValueColorAndStatus } from '../utils/thresholds';
 import AlertPanel from './AlertPanel';
 import MultiSensorChartView from './MultiSensorChartView';
 

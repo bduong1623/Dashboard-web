@@ -1,9 +1,9 @@
 // src/HistoricalComparison.jsx - Component so sánh dữ liệu lịch sử
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Calendar, BarChart3, AlertTriangle, Activity } from 'lucide-react';
-import { historicalDataService } from './historicalDataService';
-import { SENSOR_CONFIG } from './sensorConfig';
-import { getValueColorAndStatus } from './thresholds';
+import { historicalDataService } from '../utils/historicalDataService';
+import { SENSOR_CONFIG } from '../utils/sensorConfig';
+import { getValueColorAndStatus } from '../utils/thresholds';
 
 const HistoricalComparison = ({ currentData }) => {
   const [comparison, setComparison] = useState(null);

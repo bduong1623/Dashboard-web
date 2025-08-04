@@ -1,6 +1,6 @@
 // src/App.js - File App.js với default export đúng cách
 import React from 'react';
-import MultiChannelDashboard from './MultiChannelDashboard';
+import MultiChannelDashboard from './components/MultiChannelDashboard';
 import './App.css';
 
 function App() {

@@ -1,8 +1,8 @@
 // src/StatCard.jsx - Component thẻ thống kê
 import React from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
-import { getValueColorAndStatus } from './thresholds';
-import { hexToRgba } from './colorUtils';
+import { getValueColorAndStatus } from '../utils/thresholds';
+import { hexToRgba } from '../utils/colorUtils';
 
 const StatCard = ({ 
   title, 

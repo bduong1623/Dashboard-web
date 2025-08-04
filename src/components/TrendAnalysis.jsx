@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { TrendingUp, Calendar, Download, RefreshCw, BarChart3, Activity } from 'lucide-react';
-import { historicalDataService } from './historicalDataService';
-import { SENSOR_CONFIG } from './sensorConfig';
-import { getChartColorPalette } from './colorUtils';
+import { historicalDataService } from '../utils/historicalDataService';
+import { SENSOR_CONFIG } from '../utils/sensorConfig';
+import { getChartColorPalette } from '../utils/colorUtils';
 
 const TrendAnalysis = () => {
   const [trendData, setTrendData] = useState([]);

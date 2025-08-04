@@ -6,14 +6,14 @@ import { Activity, RefreshCw, AlertTriangle, Calendar, TrendingUp } from 'lucide
 import StatCard from './StatCard';
 import SensorHeatmap from './SensorHeatmap';
 import AlertPanel from './AlertPanel';
-import HistoricalComparison from './HistoricalComparison';
-import TrendAnalysis from './TrendAnalysis';
+import HistoricalComparison from '../components/HistoricalComparison';
+import TrendAnalysis from '../components/TrendAnalysis';
 import ChannelSelector from './ChannelSelector';
 
 // Import utilities và configs
-import { SENSOR_CONFIG, API_ENDPOINTS } from './sensorConfig';
-import { getValueColorAndStatus } from './thresholds';
-import './dashboard.css';
+import { SENSOR_CONFIG, API_ENDPOINTS } from '../utils/sensorConfig';
+import { getValueColorAndStatus } from '../utils/thresholds';
+import '../styles/dashboard.css';
 
 const ThingSpeakDashboard = ({ onSelectChannel }) => {
   const [data, setData] = useState(null);

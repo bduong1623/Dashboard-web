@@ -1,5 +1,5 @@
 // apiService.js - Service để fetch dữ liệu từ ThingSpeak API
-import { API_ENDPOINTS } from './sensorConfig.js';
+import { API_ENDPOINTS } from './utils/sensorConfig.js';
 
 class ThingSpeakService {
   constructor() {

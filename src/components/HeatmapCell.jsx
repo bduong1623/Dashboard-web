@@ -1,7 +1,7 @@
 // src/HeatmapCell.jsx - Component ô heatmap với No Data support
 import React from 'react';
-import { getHeatmapColor, getContrastColor } from './colorUtils';
-import { getValueColorAndStatus } from './thresholds';
+import { getHeatmapColor, getContrastColor } from '../utils/colorUtils';
+import { getValueColorAndStatus } from '../utils/thresholds';
 
 const HeatmapCell = ({ 
   value, 
