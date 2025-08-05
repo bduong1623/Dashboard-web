@@ -21,33 +21,23 @@ export const interpolateColor = (color1, color2, factor) => {
   return `rgb(${r}, ${g}, ${b})`;
 };
 
-// Enhanced heatmap color calculation
-export const getHeatmapColor = (value, min, max, thresholdType) => {
-  if (value === 0 || isNaN(value)) return '#f3f4f6';
-  
+// Đã sửa: Heatmap color chính xác theo ngưỡng, không dùng nội suy
+export const getHeatmapColor = (value, min, max, thresholdType = 'temperature') => {
+  if (value === null || value === undefined || isNaN(Number(value))) {
+  return '#cccccc';
+}
+
+
   const thresholds = SENSOR_THRESHOLDS[thresholdType] || SENSOR_THRESHOLDS.generic;
-  
-  // Normalize value to 0-1 range
-  const ratio = Math.min(Math.max((value - min) / (max - min || 1), 0), 1);
-  
-  // Find appropriate color segment based on value ratio
-  const segmentCount = thresholds.length - 1;
-  const segmentIndex = Math.floor(ratio * segmentCount);
-  const localRatio = (ratio * segmentCount) - segmentIndex;
-  
-  const startIndex = Math.min(segmentIndex, segmentCount - 1);
-  const endIndex = Math.min(startIndex + 1, segmentCount);
-  
-  // Interpolate between two adjacent colors
-  if (startIndex === endIndex) {
-    return thresholds[startIndex].color;
+  if (!thresholds || thresholds.length === 0) return '#cccccc';
+
+  for (let i = thresholds.length - 1; i >= 0; i--) {
+    if (value >= thresholds[i].min) {
+      return thresholds[i].color;
+    }
   }
-  
-  return interpolateColor(
-    thresholds[startIndex].color, 
-    thresholds[endIndex].color, 
-    localRatio
-  );
+
+  return '#cccccc'; // fallback nếu không khớp
 };
 
 // Tính độ tương phản để chọn màu text phù hợp
@@ -63,7 +53,7 @@ export const getContrastColor = (color) => {
       return luminance > 0.5 ? '#1f2937' : '#ffffff';
     }
   }
-  
+
   // Handle hex format
   if (color.startsWith('#')) {
     const r = parseInt(color.slice(1, 3), 16);
@@ -72,7 +62,7 @@ export const getContrastColor = (color) => {
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
     return luminance > 0.5 ? '#1f2937' : '#ffffff';
   }
-  
+
   return '#1f2937'; // Default dark text
 };
 
@@ -136,13 +126,13 @@ export const getTextColorForBackground = (backgroundColor) => {
 // Create smooth gradient for heatmap legend
 export const createHeatmapLegendGradient = (thresholdType) => {
   const thresholds = SENSOR_THRESHOLDS[thresholdType] || SENSOR_THRESHOLDS.generic;
-  
+
   // Create more color stops for smoother gradient
   const colorStops = thresholds.map((threshold, index) => {
     const position = (index / (thresholds.length - 1)) * 100;
     return `${threshold.color} ${position}%`;
   }).join(', ');
-  
+
   return `linear-gradient(to right, ${colorStops})`;
 };
 
