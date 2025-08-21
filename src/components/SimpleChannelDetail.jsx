@@ -12,7 +12,7 @@ const SENSOR_LEGENDS = {
     title: "Nhiệt độ",
     unit: "°C",
     levels: [
-      { label: "Đông băng", range: "< 0°C", color: "#1e3a8a" },
+      { label: "Đóng băng", range: "< 0°C", color: "#1e3a8a" },
       { label: "Rất lạnh", range: "0 - 10°C", color: "#3b82f6" },
       { label: "Lạnh", range: "10.1 - 20°C", color: "#60a5fa" },
       { label: "Thoải mái", range: "20.1 - 25°C", color: "#22c55e" },
@@ -113,7 +113,7 @@ const SENSOR_LEGENDS = {
 // Enhanced function để lấy màu theo sensor cụ thể
 const getSensorSpecificColor = (value, fieldKey) => {
   const numValue = parseFloat(value);
-  
+
   // Logic riêng cho từng sensor
   switch (fieldKey) {
     case 'field1': // Temperature
@@ -125,7 +125,7 @@ const getSensorSpecificColor = (value, fieldKey) => {
       if (numValue <= 35) return '#f97316';
       if (numValue <= 40) return '#ef4444';
       return '#7f1d1d';
-      
+
     case 'field2': // Humidity
       if (numValue < 20) return '#7f1d1d';
       if (numValue <= 30) return '#ef4444';
@@ -135,7 +135,7 @@ const getSensorSpecificColor = (value, fieldKey) => {
       if (numValue <= 80) return '#3b82f6';
       if (numValue <= 90) return '#1e40af';
       return '#1e3a8a';
-      
+
     case 'field4': // CO (ppm)
       if (numValue < 10) return '#22c55e';
       if (numValue <= 30) return '#84cc16';
@@ -143,7 +143,7 @@ const getSensorSpecificColor = (value, fieldKey) => {
       if (numValue <= 100) return '#f97316';
       if (numValue <= 200) return '#ef4444';
       return '#7f1d1d';
-      
+
     case 'field8': // Dust
       if (numValue < 12) return '#22c55e';
       if (numValue <= 35) return '#84cc16';
@@ -151,7 +151,7 @@ const getSensorSpecificColor = (value, fieldKey) => {
       if (numValue <= 150) return '#f97316';
       if (numValue <= 250) return '#ef4444';
       return '#7f1d1d';
-      
+
     default: // MQ sensors (field3, field5, field6, field7)
       if (numValue < 300) return '#22c55e';
       if (numValue <= 600) return '#84cc16';
@@ -171,7 +171,7 @@ const SensorSpecificLegend = ({ fieldKey }) => {
     <div style={{
       marginTop: '12px',
       padding: '12px',
-      backgroundColor: '#f8fafc',
+      backgroundColor: '#fcf8f8ff',
       borderRadius: '8px',
       border: '1px solid #e2e8f0'
     }}>
@@ -263,7 +263,7 @@ const SensorSpecificLegend = ({ fieldKey }) => {
 const parseDateString = (dateStr, onFilterChange, filterKey, otherDate = null) => {
   // Remove any non-digit and non-slash characters
   const cleanStr = dateStr.replace(/[^\d\/]/g, '');
-  
+
   // Auto-add slashes - thông minh hơn
   let formattedStr = cleanStr;
   if (cleanStr.length >= 2 && cleanStr.length <= 8 && !cleanStr.includes('/')) {
@@ -275,35 +275,35 @@ const parseDateString = (dateStr, onFilterChange, filterKey, otherDate = null) =
       formattedStr = cleanStr.slice(0, 2) + '/' + cleanStr.slice(2, 4) + '/' + cleanStr.slice(4);
     }
   }
-  
+
   const parts = formattedStr.split('/');
-  
+
   // Validate and process only if we have all 3 parts
   if (parts.length === 3 && parts.every(part => part.length > 0)) {
     const dayStr = parts[0];
     const monthStr = parts[1];
     const yearStr = parts[2];
-    
+
     // Parse numbers
     const day = parseInt(dayStr, 10);
     const month = parseInt(monthStr, 10);
     const year = parseInt(yearStr, 10);
-    
+
     // Validate ranges
     const currentYear = new Date().getFullYear();
     const isValidDay = day >= 1 && day <= 31;
     const isValidMonth = month >= 1 && month <= 12;
     const isValidYear = year >= 2020 && year <= currentYear + 1;
-    
+
     if (isValidDay && isValidMonth && isValidYear) {
       // Check if day is valid for the specific month/year
       const daysInMonth = new Date(year, month, 0).getDate();
-      
+
       if (day <= daysInMonth) {
         // Format to ISO date
         const isoDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
         const testDate = new Date(isoDate);
-        
+
         // Additional validation
         if (!isNaN(testDate.getTime()) && testDate <= new Date()) {
           // If this is "to" date, make sure it's not before "from" date
@@ -321,36 +321,36 @@ const parseDateString = (dateStr, onFilterChange, filterKey, otherDate = null) =
           }
         }
       } else {
-        const monthNames = ['', 'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 
-                           'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
+        const monthNames = ['', 'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
+          'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
         return { isValid: false, message: `❌ ${monthNames[month]} năm ${year} chỉ có ${daysInMonth} ngày` };
       }
     } else {
       let errorMsg = '❌ ';
       if (!isValidDay) errorMsg += 'Ngày không hợp lệ (1-31). ';
-      if (!isValidMonth) errorMsg += 'Tháng không hợp lệ (1-12). ';  
+      if (!isValidMonth) errorMsg += 'Tháng không hợp lệ (1-12). ';
       if (!isValidYear) errorMsg += `Năm không hợp lệ (2020-${currentYear + 1}). `;
       return { isValid: false, message: errorMsg };
     }
   }
-  
+
   // Progress feedback
   if (cleanStr.length === 0) {
     return { isValid: true, message: '' };
   } else if (cleanStr.length < 8) {
     return { isValid: false, message: `⏳ Đang nhập... (${cleanStr.length}/8 ký tự)` };
   }
-  
+
   return { isValid: false, message: '⏳ Nhập đầy đủ dd/mm/yyyy' };
 };
 
-const DateInput = ({ 
-  placeholder, 
-  value, 
-  filterKey, 
-  onFilterChange, 
-  otherDate, 
-  label 
+const DateInput = ({
+  placeholder,
+  value,
+  filterKey,
+  onFilterChange,
+  otherDate,
+  label
 }) => {
   const [inputValue, setInputValue] = React.useState(
     value ? new Date(value).toLocaleDateString('vi-VN') : ''
@@ -371,7 +371,7 @@ const DateInput = ({
   const handleInputChange = (e) => {
     const newValue = e.target.value;
     setInputValue(newValue);
-    
+
     const result = parseDateString(newValue, onFilterChange, filterKey, otherDate);
     setValidationResult(result);
   };
@@ -483,10 +483,10 @@ const FilterPanel = ({ filters, onFilterChange, isOpen, onToggle }) => {
         width: '100%'
       }}>
         {/* Column 1: Time Range, Display Count, Value Range */}
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          gap: '20px' 
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px'
         }}>
           {/* Time Range */}
           <div>
@@ -675,7 +675,7 @@ const FilterPanel = ({ filters, onFilterChange, isOpen, onToggle }) => {
                     color: '#1d4ed8',
                     border: '1px solid #bae6fd'
                   }}>
-                    📊 <strong>Xem data từ:</strong> {new Date(filters.customDateFrom).toLocaleDateString('vi-VN')} 
+                    📊 <strong>Xem data từ:</strong> {new Date(filters.customDateFrom).toLocaleDateString('vi-VN')}
                     → {new Date(filters.customDateTo).toLocaleDateString('vi-VN')}
                     {filters.customDateFrom === filters.customDateTo && (
                       <span style={{ color: '#059669', fontWeight: 'bold' }}> (chỉ 1 ngày)</span>
@@ -707,8 +707,8 @@ const FilterPanel = ({ filters, onFilterChange, isOpen, onToggle }) => {
                   border: '1px solid #e5e7eb'
                 }}>
                   💡 <strong>Cách nhập nhanh:</strong><br />
-                  • Gõ <code style={{backgroundColor: '#e5e7eb', padding: '1px 3px', borderRadius: '2px'}}>30072025</code> → Tự động thành <strong>30/07/2025</strong><br />
-                  • Hoặc gõ từng phần: <code style={{backgroundColor: '#e5e7eb', padding: '1px 3px', borderRadius: '2px'}}>30/07/2025</code><br />
+                  • Gõ <code style={{ backgroundColor: '#e5e7eb', padding: '1px 3px', borderRadius: '2px' }}>30072025</code> → Tự động thành <strong>30/07/2025</strong><br />
+                  • Hoặc gõ từng phần: <code style={{ backgroundColor: '#e5e7eb', padding: '1px 3px', borderRadius: '2px' }}>30/07/2025</code><br />
                   🔄 <strong>Kiểm tra tự động:</strong> Ngày 1-31, Tháng 1-12, Năm 2020-{new Date().getFullYear() + 1}<br />
                   📅 <strong>Lưu ý:</strong> Ngày phải ≤ hôm nay, ngày kết thúc ≥ ngày bắt đầu
                 </div>
@@ -753,7 +753,7 @@ const FilterPanel = ({ filters, onFilterChange, isOpen, onToggle }) => {
                 <option value={25}>25 records (nhiều)</option>
                 <option value={50}>50 records (tối đa)</option>
               </select>
-              
+
               {/* Quick Count Buttons */}
               <div style={{
                 display: 'flex',
@@ -868,7 +868,7 @@ const FilterPanel = ({ filters, onFilterChange, isOpen, onToggle }) => {
                   />
                 </div>
               </div>
-              
+
               {/* Quick Range Buttons */}
               <div style={{
                 display: 'flex',
@@ -953,10 +953,10 @@ const FilterPanel = ({ filters, onFilterChange, isOpen, onToggle }) => {
         </div>
 
         {/* Column 2: Quick Filters, Sensor Selection, Reset */}
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          gap: '20px' 
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px'
         }}>
           {/* Sensor Selection - Enhanced */}
           <div>
@@ -969,7 +969,7 @@ const FilterPanel = ({ filters, onFilterChange, isOpen, onToggle }) => {
             }}>
               🎛️ Chọn sensors để hiển thị:
             </label>
-            
+
             {/* Sensor Grid */}
             <div style={{
               display: 'grid',
@@ -1005,14 +1005,14 @@ const FilterPanel = ({ filters, onFilterChange, isOpen, onToggle }) => {
                         ...filters.selectedSensors,
                         [fieldKey]: e.target.checked
                       })}
-                      style={{ 
-                        cursor: 'pointer', 
-                        width: '14px', 
+                      style={{
+                        cursor: 'pointer',
+                        width: '14px',
                         height: '14px',
                         accentColor: '#3b82f6'
                       }}
                     />
-                    
+
                     {/* Icon */}
                     <div style={{
                       display: 'flex',
@@ -1026,7 +1026,7 @@ const FilterPanel = ({ filters, onFilterChange, isOpen, onToggle }) => {
                     }}>
                       <config.icon size={10} />
                     </div>
-                    
+
                     {/* Text Content */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{
@@ -1048,7 +1048,7 @@ const FilterPanel = ({ filters, onFilterChange, isOpen, onToggle }) => {
                         {fieldKey}
                       </div>
                     </div>
-                    
+
                     {/* Selected Indicator */}
                     {isSelected && (
                       <div style={{
@@ -1103,7 +1103,7 @@ const FilterPanel = ({ filters, onFilterChange, isOpen, onToggle }) => {
               >
                 ✅ Tất cả
               </button>
-              
+
               <button
                 type="button"
                 onClick={() => {
@@ -1126,7 +1126,7 @@ const FilterPanel = ({ filters, onFilterChange, isOpen, onToggle }) => {
               >
                 ❌ Không
               </button>
-              
+
               <button
                 type="button"
                 onClick={() => {
@@ -1172,7 +1172,7 @@ const FilterPanel = ({ filters, onFilterChange, isOpen, onToggle }) => {
                 {Object.values(filters.selectedSensors).filter(Boolean).length}
               </span>
               /{Object.keys(SENSOR_CONFIG).length} sensors
-              
+
               {/* Selected Sensors List */}
               {Object.values(filters.selectedSensors).filter(Boolean).length > 0 && (
                 <div style={{ marginTop: '6px' }}>
@@ -1184,12 +1184,12 @@ const FilterPanel = ({ filters, onFilterChange, isOpen, onToggle }) => {
                   }
                 </div>
               )}
-              
+
               {Object.values(filters.selectedSensors).filter(Boolean).length === 0 && (
-                <div style={{ 
-                  marginTop: '6px', 
-                  color: '#dc2626', 
-                  fontWeight: '600' 
+                <div style={{
+                  marginTop: '6px',
+                  color: '#dc2626',
+                  fontWeight: '600'
                 }}>
                   ⚠️ Chưa chọn sensor nào - Không có dữ liệu hiển thị!
                 </div>
@@ -1275,7 +1275,7 @@ const FilterPanel = ({ filters, onFilterChange, isOpen, onToggle }) => {
           </div>
           <strong style={{ fontSize: '0.9rem' }}>Tóm tắt bộ lọc hiện tại:</strong>
         </div>
-        
+
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
@@ -1288,7 +1288,7 @@ const FilterPanel = ({ filters, onFilterChange, isOpen, onToggle }) => {
             <strong>⏰ Thời gian:</strong>{' '}
             {filters.timeRange === 'custom' && filters.customDateFrom && filters.customDateTo ? (
               <>
-                {filters.customDateFrom === filters.customDateTo ? 
+                {filters.customDateFrom === filters.customDateTo ?
                   `Ngày ${new Date(filters.customDateFrom).toLocaleDateString('vi-VN')}` :
                   `${new Date(filters.customDateFrom).toLocaleDateString('vi-VN')} - ${new Date(filters.customDateTo).toLocaleDateString('vi-VN')}`
                 }
@@ -1321,7 +1321,7 @@ const FilterPanel = ({ filters, onFilterChange, isOpen, onToggle }) => {
 };
 
 // ===== SENSOR LINEAR HEATMAP COMPONENT =====
-const SensorLinearHeatmap = ({ title, data, unit, min, max, thresholdType, displayCount, fieldKey }) => {
+const SensorLinearHeatmap = ({ title, data, unit, min, max, thresholdType, createdAts, displayCount, fieldKey }) => {
   const getSensorColor = (value) => {
     return getSensorSpecificColor(value, fieldKey);
   };
@@ -1329,20 +1329,20 @@ const SensorLinearHeatmap = ({ title, data, unit, min, max, thresholdType, displ
   const getOptimalTextColor = (backgroundColor) => {
     const darkColors = ['#1e3a8a', '#1e40af', '#7f1d1d', '#ef4444', '#f97316'];
     const lightColors = ['#22c55e', '#84cc16', '#eab308', '#60a5fa'];
-    
+
     if (darkColors.includes(backgroundColor)) {
       return '#ffffff';
     } else if (lightColors.includes(backgroundColor)) {
       return '#000000';
     }
-    
+
     // Fallback to luminance calculation
     const hex = backgroundColor.replace('#', '');
     const r = parseInt(hex.substr(0, 2), 16);
     const g = parseInt(hex.substr(2, 2), 16);
     const b = parseInt(hex.substr(4, 2), 16);
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    
+
     return luminance > 0.55 ? '#000000' : '#ffffff';
   };
 
@@ -1362,11 +1362,13 @@ const SensorLinearHeatmap = ({ title, data, unit, min, max, thresholdType, displ
         alignItems: 'center',
         marginBottom: '16px'
       }}>
-        <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600' }}>
+        <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', color: "#000" }}>
           {title}
         </h3>
+
+
         <div style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-          Min: <strong style={{ color: '#059669' }}>{min.toFixed(1)}{unit}</strong> 
+          Min: <strong style={{ color: '#059669' }}>{min.toFixed(1)}{unit}</strong>
           {' '}Max: <strong style={{ color: '#dc2626' }}>{max.toFixed(1)}{unit}</strong>
           {' '}Avg: <strong style={{ color: '#7c3aed' }}>{((min + max) / 2).toFixed(1)}{unit}</strong>
           {' '}({displayData.length} records)
@@ -1383,7 +1385,7 @@ const SensorLinearHeatmap = ({ title, data, unit, min, max, thresholdType, displ
         {displayData.map((value, index) => {
           const bgColor = getSensorColor(value);
           const textColor = getOptimalTextColor(bgColor);
-          
+
           return (
             <div
               key={index}
@@ -1425,14 +1427,16 @@ const SensorLinearHeatmap = ({ title, data, unit, min, max, thresholdType, displ
                 {value.toFixed(1)}{unit}
               </div>
               {displayCount <= 15 && (
-                <div style={{ 
-                  fontSize: '0.55rem', 
+                <div style={{
+                  fontSize: '0.55rem',
                   opacity: 0.9,
                   marginTop: '2px',
                   fontWeight: '600',
                   textShadow: 'inherit'
                 }}>
-                  #{displayData.length - index}
+
+{new Date(createdAts[index]).toLocaleTimeString('vi-VN')}
+{/* {String( new Date(createdAts[index]).getHours()).padStart(2, '0')}:{String( new Date(createdAts[index]).getMinutes()).padStart(2, '0')  */}
                 </div>
               )}
             </div>
@@ -1455,7 +1459,7 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
   const [countdown, setCountdown] = useState(30);
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState('heatmap'); // 'heatmap' hoặc 'charts'
-  
+
   // Filter states
   const [filters, setFilters] = useState({
     timeRange: '1day',
@@ -1527,15 +1531,15 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
       setError(null);
 
       let apiUrl = `https://api.thingspeak.com/channels/${channelInfo.channel}/feeds.json?api_key=${channelInfo.apiKey}`;
-      
+
       // Handle custom date range
       if (filters.timeRange === 'custom' && filters.customDateFrom && filters.customDateTo) {
         const startDate = new Date(filters.customDateFrom);
         const endDate = new Date(filters.customDateTo);
         endDate.setHours(23, 59, 59, 999); // Set to end of day
-        
+
         apiUrl += `&start=${startDate.toISOString()}&end=${endDate.toISOString()}`;
-        
+
         // For custom date, we might get a lot of data, so we limit results
         const daysDiff = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
         const maxResults = Math.min(8000, daysDiff * 288); // Max ~288 records per day (5min intervals)
@@ -1553,7 +1557,7 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
       }
 
       const rawData = await response.json();
-      
+
       if (!rawData.feeds || rawData.feeds.length === 0) {
         setError('Không có dữ liệu trong khoảng thời gian đã chọn');
         return;
@@ -1633,7 +1637,7 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
           .some(fieldKey => {
             const config = SENSOR_CONFIG[fieldKey];
             const value = parseFloat(feed[fieldKey]) || 0;
-            
+
             if (config && config.alertLevels) {
               return value >= config.alertLevels.caution;
             }
@@ -1644,13 +1648,19 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
 
     // Process data for heatmaps
     const processedData = {};
+
     Object.keys(filters.selectedSensors)
       .filter(fieldKey => filters.selectedSensors[fieldKey])
       .forEach(fieldKey => {
-        const values = feeds.map(feed => parseFloat(feed[fieldKey]) || 0).filter(v => v > 0);
+        const payload = feeds.map(feed => ({ value: parseFloat(feed[fieldKey]) || 0, created_at: feed.created_at })).filter(v => v.value > 0);
+        const createdAts = payload.map(v => v.created_at)
+        const values = payload.map(v => v.value)
+
         if (values.length > 0) {
           processedData[fieldKey] = {
             values,
+            createdAts,
+
             min: Math.min(...values),
             max: Math.max(...values),
             latest: values[values.length - 1]
@@ -1673,8 +1683,8 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
         month: '2-digit'
       });
 
-      const dataPoint = { 
-        time: timeLabel, 
+      const dataPoint = {
+        time: timeLabel,
         timestamp: feed.created_at,
         index: index
       };
@@ -1761,7 +1771,7 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
         <p>Đang tải dữ liệu kênh {channelInfo?.channel}...</p>
         <p style={{ fontSize: '0.8rem', color: '#6b7280' }}>
           {filters.timeRange === 'custom' && filters.customDateFrom && filters.customDateTo ? (
-            filters.customDateFrom === filters.customDateTo ? 
+            filters.customDateFrom === filters.customDateTo ?
               `Đang tải data ngày ${new Date(filters.customDateFrom).toLocaleDateString('vi-VN')}...` :
               `Đang tải data từ ${new Date(filters.customDateFrom).toLocaleDateString('vi-VN')} đến ${new Date(filters.customDateTo).toLocaleDateString('vi-VN')}...`
           ) : (
@@ -1836,7 +1846,7 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
               🔧 Kênh {channelInfo.channel} - Chi tiết
             </h1>
           </div>
-          
+
           <div className="dashboard-controls">
             {/* View Mode Toggle */}
             <button
@@ -1846,7 +1856,7 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
               <BarChart3 size={16} />
               Heatmap
             </button>
-            
+
             <button
               onClick={() => setViewMode('charts')}
               className={`control-btn ${viewMode === 'charts' ? 'active' : ''}`}
@@ -1881,7 +1891,7 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
               <Download size={16} />
               Xuất CSV
             </button>
-            
+
             <button
               onClick={fetchChannelData}
               disabled={loading}
@@ -1903,10 +1913,10 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
           fontSize: '0.9rem',
           color: '#0c4a6e'
         }}>
-          📊 Kênh <strong>{channelInfo.channel}</strong> • 
-          {getTimeRangeLabel()} • 
-          {viewMode === 'heatmap' ? `Heatmap ${filters.displayCount} records` : `Biểu đồ chuyên biệt ${chartData.length} records`} • 
-          Tổng <strong>{data.feeds.length} records</strong> có sẵn • 
+          📊 Kênh <strong>{channelInfo.channel}</strong> •
+          {getTimeRangeLabel()} •
+          {viewMode === 'heatmap' ? `Heatmap ${filters.displayCount} records` : `Biểu đồ chuyên biệt ${chartData.length} records`} •
+          Tổng <strong>{data.feeds.length} records</strong> có sẵn •
           Cập nhật: <strong>{lastUpdate?.toLocaleString('vi-VN')}</strong>
         </div>
 
@@ -1917,12 +1927,13 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
             {Object.keys(filteredData).map(fieldKey => {
               const config = SENSOR_CONFIG[fieldKey];
               const sensorData = filteredData[fieldKey];
-              
+
               return (
                 <SensorLinearHeatmap
                   key={fieldKey}
                   title={config.name}
                   data={sensorData.values}
+                  createdAts={sensorData.createdAts}
                   unit={config.unit}
                   min={sensorData.min}
                   max={sensorData.max}
@@ -1937,7 +1948,7 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
 
         {viewMode === 'charts' && (
           <div>
-            <MultiSensorChartView 
+            <MultiSensorChartView
               data={chartData || []}
               title={`📊 Biểu đồ chuyên biệt kênh ${channelInfo?.channel || 'Unknown'}`}
               selectedSensors={chartSelectedSensors}
@@ -1947,25 +1958,25 @@ const SimpleChannelDetail = ({ channelInfo, onBack }) => {
         )}
 
         {/* No Data Warning */}
-        {((viewMode === 'heatmap' && Object.keys(filteredData).length === 0) || 
+        {((viewMode === 'heatmap' && Object.keys(filteredData).length === 0) ||
           (viewMode === 'charts' && chartData.length === 0)) && (
-          <div style={{
-            padding: '40px',
-            textAlign: 'center',
-            backgroundColor: '#fef3c7',
-            borderRadius: '12px',
-            border: '1px solid #fbbf24',
-            color: '#92400e'
-          }}>
-            <AlertTriangle size={48} style={{ marginBottom: '16px' }} />
-            <p style={{ fontSize: '1.1rem', fontWeight: '600', margin: '0 0 8px 0' }}>
-              Không có dữ liệu phù hợp với bộ lọc
-            </p>
-            <p style={{ margin: 0, fontSize: '0.9rem' }}>
-              Thử điều chỉnh các tiêu chí lọc hoặc chọn khoảng thời gian khác
-            </p>
-          </div>
-        )}
+            <div style={{
+              padding: '40px',
+              textAlign: 'center',
+              backgroundColor: '#fef3c7',
+              borderRadius: '12px',
+              border: '1px solid #fbbf24',
+              color: '#92400e'
+            }}>
+              <AlertTriangle size={48} style={{ marginBottom: '16px' }} />
+              <p style={{ fontSize: '1.1rem', fontWeight: '600', margin: '0 0 8px 0' }}>
+                Không có dữ liệu phù hợp với bộ lọc
+              </p>
+              <p style={{ margin: 0, fontSize: '0.9rem' }}>
+                Thử điều chỉnh các tiêu chí lọc hoặc chọn khoảng thời gian khác
+              </p>
+            </div>
+          )}
 
         <style jsx>{`
           @keyframes fadeIn {

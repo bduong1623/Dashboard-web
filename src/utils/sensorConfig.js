@@ -96,7 +96,7 @@ export const API_ENDPOINTS = [
   { channel: '2999651', apiKey: 'ZOMAJTNSSBDUG7MX' },
   { channel: '2999652', apiKey: 'XV2R0CRHV51AGG8O' },
   { channel: '2982770', apiKey: 'S2CGQJ8V23UMYPS4' },
-  { channel: '3026416', apiKey: '3KQYFGDOGDINWDGP' },
+  { channel: '3026384', apiKey: '3KQYFGDOGDINWDGP' },
   { channel: '3026386', apiKey: 'FGJJWJDCDNNUGYV3' },
   { channel: '3026415', apiKey: 'SJ9KGROXAAGC3QRT' },
   { channel: '3026416', apiKey: 'M6R41GRLXCVS2YR8' },

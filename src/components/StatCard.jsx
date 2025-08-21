@@ -28,6 +28,7 @@ const StatCard = ({
     transition: 'all 0.3s ease',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
     cursor: 'pointer'
+
   };
 
   const headerStyle = {

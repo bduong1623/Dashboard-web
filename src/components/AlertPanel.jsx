@@ -9,7 +9,7 @@ const AlertPanel = ({
   showTimestamp = true,
   collapsible = true 
 }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [dismissedAlerts, setDismissedAlerts] = useState(new Set());
 
   if (!alerts || alerts.length === 0) return null;

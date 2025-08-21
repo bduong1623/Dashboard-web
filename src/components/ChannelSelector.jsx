@@ -53,7 +53,7 @@ const ChannelSelector = ({ channels, onSelectChannel }) => {
       </button>
 
       {/* Dropdown Menu */}
-      {isOpen && (
+      {!!isOpen && (
         <>
           {/* Backdrop */}
           <div
